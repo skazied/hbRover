@@ -4,25 +4,23 @@ namespace HbRover
 {
     class Program
     {
-        static int maxY = 0;
-        static int maxX = 0;
-
-        static int roverX = 0;
-        static int roverY = 0;
-        static char roverOrientation;
+        int maxY = 0;
+        int maxX = 0;
 
         static void Main(string[] args)
         {
-            takeSizesOfGrid();
+            Program program = new Program();
+            Rover rover = null;
+            program.createPlateau();
+
+
             while (true)
             {
                 Console.WriteLine("Please enter command or rover position");
 
-                var command = Console.ReadLine();
-                command = command.ToUpper().TrimStart().TrimEnd();
+                var command = Console.ReadLine().ToUpper().TrimStart().TrimEnd();
 
-
-                var commandType = checkIncomingCommand(command);
+                var commandType = program.validateIncomingCommand(command);
                 if (commandType == CommandType.UNKNOWN)
                 {
                     Console.WriteLine("You entered unexpected values!");
@@ -30,63 +28,84 @@ namespace HbRover
                 }
                 else if (commandType == CommandType.ROVER_POSITION_COMMAND)
                 {
-                    var splittedData = command.Split(" ");
-                    roverX = Convert.ToInt32(splittedData[0]);
-                    roverY = Convert.ToInt32(splittedData[1]);
-                    roverOrientation = Convert.ToChar(splittedData[2]);
+                    rover = program.setRoverLocationData(command);
                 }
                 else if (commandType == CommandType.MOVEMENT_COMMAND)
                 {
-                    moveRover(command);
+                    if (rover == null)
+                    {
+                        Console.WriteLine("You should enter rover's location data before move the rover!");
+                        continue;
+                    }
+                    if (!program.moveRover(command, rover))
+                    {
+                        Console.WriteLine("Rover will move out the grid! check the movement command first!");
+                    }
+                    else
+                    {
+                        Console.WriteLine(rover.PositionX.ToString() + " " + rover.PositionY.ToString() + " " + rover.Rotation.ToString());
+                    }
                 }
             }
-
-
-
-
-
-
-
         }
 
-        private static void moveRover(string command)
+        public Rover setRoverLocationData(string command)
         {
-            var newRoverX = roverX;
-            var newRoverY = roverY;
-            var newRoverOrientation = roverOrientation;
+            var splittedData = command.Split(" ");
+            return new Rover()
+            {
+                PositionX = Convert.ToInt32(splittedData[0]),
+                PositionY = Convert.ToInt32(splittedData[1]),
+                Rotation = Convert.ToChar(splittedData[2])
+            };
+        }
+
+        public bool moveRover(string command, Rover rover)
+        {
+            var newRoverX = rover.PositionX;
+            var newRoverY = rover.PositionY;
+            var newRoverOrientation = rover.Rotation;
 
             for (int i = 0; i < command.Length; i++)
             {
                 if (command[i] == 'M')
                 {
-                    if (newRoverOrientation == 'E') roverY++;
-                    if (newRoverOrientation == 'W') roverY--;
-                    if (newRoverOrientation == 'N') roverX++;
-                    if (newRoverOrientation == 'S') roverY--;
+                    if (newRoverOrientation == 'E') { newRoverX++; continue; }
+                    if (newRoverOrientation == 'W') { newRoverY--; continue; }
+                    if (newRoverOrientation == 'N') { newRoverX++; continue; }
+                    if (newRoverOrientation == 'S') { newRoverY--; continue; }
                 }
 
-                if (command[i] == 'L')
+                else if (command[i] == 'L')
                 {
-                    if (newRoverOrientation == 'E') newRoverOrientation = 'N';
-                    if (newRoverOrientation == 'W') newRoverOrientation = 'S';
-                    if (newRoverOrientation == 'N') newRoverOrientation = 'W';
-                    if (newRoverOrientation == 'S') newRoverOrientation = 'E';
+                    if (newRoverOrientation == 'E') { newRoverOrientation = 'N'; continue; }
+                    if (newRoverOrientation == 'W') { newRoverOrientation = 'S'; continue; }
+                    if (newRoverOrientation == 'N') { newRoverOrientation = 'W'; continue; }
+                    if (newRoverOrientation == 'S') { newRoverOrientation = 'E'; continue; }
                 }
 
-                if (command[i] == 'R')
+                else if (command[i] == 'R')
                 {
-                    if (newRoverOrientation == 'E') newRoverOrientation = 'S';
-                    if (newRoverOrientation == 'W') newRoverOrientation = 'N';
-                    if (newRoverOrientation == 'N') newRoverOrientation = 'E';
-                    if (newRoverOrientation == 'S') newRoverOrientation = 'W';
+                    if (newRoverOrientation == 'E') { newRoverOrientation = 'S'; continue; }
+                    if (newRoverOrientation == 'W') { newRoverOrientation = 'N'; continue; }
+                    if (newRoverOrientation == 'N') { newRoverOrientation = 'E'; continue; }
+                    if (newRoverOrientation == 'S') { newRoverOrientation = 'W'; continue; }
+                }
+                if (newRoverX < 0 || newRoverY < 0 || newRoverY > maxY || newRoverX > maxX)
+                {
+                    return false;
                 }
             }
+            rover.PositionX = newRoverX;
+            rover.PositionY = newRoverY;
+            rover.Rotation = newRoverOrientation;
+            return true;
         }
 
-        
 
 
-        public static CommandType checkIncomingCommand(string command)
+
+        public CommandType validateIncomingCommand(string command)
         {
             var splittedData = command.Split(" ");
             if (splittedData.Length == 1 && splittedData[0].Replace("L", "").Replace("R", "").Replace("M", "").Length == 0)
@@ -111,13 +130,13 @@ namespace HbRover
             return CommandType.UNKNOWN;
         }
 
-        public static void takeSizesOfGrid()
+        public void createPlateau()
         {
             while (true)
             {
                 try
                 {
-                    Console.WriteLine("Please enter the upper right coordinates!");
+                    Console.WriteLine("Please enter the size of plateau!");
                     var upeerRightAsString = Console.ReadLine();
                     var tempArray = upeerRightAsString.Split(" ");
                     if (tempArray.Length != 2)
