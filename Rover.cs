@@ -26,29 +26,37 @@ namespace HbRover
             {
                 if (command[i] == 'M')
                 {
-                    if (newRoverOrientation == 'E') { newRoverX++; continue; }
-                    if (newRoverOrientation == 'W') { newRoverX--; continue; }
-                    if (newRoverOrientation == 'N') { newRoverY++; continue; }
-                    if (newRoverOrientation == 'S') { newRoverY--; continue; }
+                    switch (newRoverOrientation)
+                    {
+                        case 'E': newRoverX++; break;
+                        case 'W': newRoverX--; break;
+                        case 'N': newRoverY++; break;
+                        case 'S': newRoverY--; break;
+                    }
                 }
 
                 else if (command[i] == 'L')
                 {
-                    if (newRoverOrientation == 'E') { newRoverOrientation = 'N'; continue; }
-                    if (newRoverOrientation == 'W') { newRoverOrientation = 'S'; continue; }
-                    if (newRoverOrientation == 'N') { newRoverOrientation = 'W'; continue; }
-                    if (newRoverOrientation == 'S') { newRoverOrientation = 'E'; continue; }
+                    switch (newRoverOrientation)
+                    {
+                        case 'E': newRoverOrientation = 'N'; break;
+                        case 'W': newRoverOrientation = 'S'; break;
+                        case 'N': newRoverOrientation = 'W'; break;
+                        case 'S': newRoverOrientation = 'E'; break;
+                    }
                 }
 
                 else if (command[i] == 'R')
                 {
-                    if (newRoverOrientation == 'E') { newRoverOrientation = 'S'; continue; }
-                    if (newRoverOrientation == 'W') { newRoverOrientation = 'N'; continue; }
-                    if (newRoverOrientation == 'N') { newRoverOrientation = 'E'; continue; }
-                    if (newRoverOrientation == 'S') { newRoverOrientation = 'W'; continue; }
+                    switch (newRoverOrientation)
+                    {
+                        case 'E': newRoverOrientation = 'S'; break;
+                        case 'W': newRoverOrientation = 'N'; break;
+                        case 'N': newRoverOrientation = 'E'; break;
+                        case 'S': newRoverOrientation = 'W'; break;
+                    }
                 }
                 if (!plateau.IsInPlateau(newRoverX, newRoverY)) return false;
-
             }
             PositionX = newRoverX;
             PositionY = newRoverY;
