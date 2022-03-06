@@ -1,13 +1,21 @@
-﻿using System;
+﻿using HbRover.Interfaces;
+using System;
 
 namespace HbRover
 {
-    public class Rover
+    /// <summary>
+    /// This class holds a rover's position data and helps to move rover.
+    /// </summary>
+    public class Rover : IRover
     {
         public int PositionX { get; set; }
         public int PositionY { get; set; }
         public char Rotation { get; set; }
 
+        /// <summary>
+        /// command should have two spaces and 3 words
+        /// </summary>
+        /// <param name="command"></param>
         public Rover(string command)
         {
             var splittedData = command.Split(" ");
@@ -16,7 +24,16 @@ namespace HbRover
             Rotation = Convert.ToChar(splittedData[2]);
         }
 
-        public bool MoveRover(string command, Plateau plateau)
+        /// <summary>
+        /// this function moves the rover.
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="plateau"></param>
+        /// <returns>
+        /// false: rover will out of the grid
+        /// true: rover moved successfully
+        /// </returns>
+        public bool MoveRover(string command, IPlateau plateau)
         {
             var newRoverX = PositionX;
             var newRoverY = PositionY;
@@ -64,12 +81,28 @@ namespace HbRover
             return true;
         }
 
+        /// <summary>
+        /// this fucntion check if the movement command is valid.
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns>
+        /// true: command is valid
+        /// false: command is not valid
+        /// </returns>
         public static bool ValidateMovementCommand(string command)
         {
             var splittedData = command.Split(" ");
-            return splittedData.Length == 1 && splittedData[0].Replace("L", "").Replace("R", "").Replace("M", "").Length == 0;
+            return splittedData.Length == 1 && splittedData[0].Replace("L", "").Replace("R", "").Replace("M", "").Length == 0 && !String.IsNullOrEmpty(command);
         }
 
+        /// <summary>
+        /// this fucntion helps to check if the rover position set command is valid
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns>
+        /// true: command is valid
+        /// false: command is not valid
+        /// </returns>
         public static bool ValidateSetRoverPositionCommand(string command)
         {
             try

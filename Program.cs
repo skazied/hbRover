@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HbRover.Interfaces;
+using System;
 
 namespace HbRover
 {
@@ -12,9 +13,13 @@ namespace HbRover
         private static readonly string ROVER_OUT_MSG = "Rover will move out the grid! check the movement command!";
 
 
-        private Rover rover;
-        private Plateau plateau;
+        private IRover rover;
+        private IPlateau plateau;
 
+        /// <summary>
+        /// static main function for start the app
+        /// </summary>
+        /// <param name="args"></param>
         static void Main(string[] args)
         {
             Program program = new Program();
@@ -22,6 +27,9 @@ namespace HbRover
             program.getRoverCommands();
         }
 
+        /// <summary>
+        /// this fucntion gets rover position set or rover movements commands in loop
+        /// </summary>
         public void getRoverCommands()
         {
             while (true)
@@ -58,6 +66,9 @@ namespace HbRover
             }
         }
 
+        /// <summary>
+        /// this fucntion helps to create the plateau
+        /// </summary>
         public void createPlateau()
         {
             while (true)
@@ -73,6 +84,15 @@ namespace HbRover
             };
         }
 
+        /// <summary>
+        /// you should use this function for check command type
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns>
+        /// MOVEMENT_COMMAND: you can move rover with this command
+        /// ROVER_POSITION_COMMAND: you can set rover's position with the given command string
+        /// UNKNOWN: someting gone wrong, command is not valid.
+        /// </returns>
         public CommandType detectIncomingCommandType(string command)
         {
             if (Rover.ValidateMovementCommand(command))

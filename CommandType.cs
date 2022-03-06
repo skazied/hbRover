@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace HbRover
 {
+    /// <summary>
+    /// this enum is used for detect command type.
+    /// </summary>
     public enum CommandType
     {
         ROVER_POSITION_COMMAND,
